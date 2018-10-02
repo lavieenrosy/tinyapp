@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <h1>List of URLs</h1>
+    <ul>
+      <% for (var item in longURL) { %>
+        <li><%= longURL[item] %> - <%= item %></li>
+      <% }; %>
+  </ul>
+</body>
+</html>
