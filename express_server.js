@@ -10,6 +10,8 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//list of URLs
+
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -21,6 +23,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+
 //post route to handle form submission
 
 app.post("/urls", (req, res) => {
@@ -31,6 +34,16 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newlyGeneratedShortURL}`);
   // res.send("Ok");
 });
+
+//request to handle deleted short URLs
+
+app.post("/urls/:id/delete", (req, res) => {
+  let targetURL = req.params.shortURL;
+  delete urlDatabase[targetURL];
+  res.redirect("/urls");
+});
+
+//displays url entry
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase };
