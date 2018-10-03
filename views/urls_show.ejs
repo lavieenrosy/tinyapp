@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <title>TinyApp</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
 
@@ -9,18 +10,17 @@
   <% include ./partials/_header %>
 </header>
 
-  <h2>ShortURL: <%= shortURL %> </h2>
+  <h2 class="text-secondary">ShortURL: <b><%= shortURL %> </b></h2>
+    <br>
     <ul>
-
-        <li>
-          <%= longURL[shortURL] %> - <%= shortURL %>
-          <form method="POST" action=<%= `/urls/${shortURL}` %>>
-            <label for="longURL">Enter a new URL:</label>
-            <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-            <button>edit</button>
-          </form>
-        </li>
-
+      <li>
+        <%= longURL[shortURL] %> - <%= shortURL %>
+        <form method="POST" action=<%= `/urls/${shortURL}` %>>
+          <label for="longURL" class="text-info">Enter a new URL:</label>
+          <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+          <button>edit</button>
+        </form>
+      </li>
   </ul>
 </body>
 </html>

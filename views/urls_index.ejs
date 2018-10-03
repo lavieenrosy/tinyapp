@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <title>TinyApp</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
 
@@ -9,10 +10,10 @@
   <% include ./partials/_header %>
 </header>
 
-  <h1>List of URLs</h1>
+  <h3 class="text-secondary">List of URLs</h3>
     <ul>
       <% for (var item in urls) { %>
-        <li><%= item %> - <%= urls[item] %> - <a href=<%= `/urls/${item}` %>>edit</a>
+        <li><%= item %> - <%= urls[item] %> - <a href=<%= `/urls/${item}` %> class="text-info" >edit</a>
         <form method="POST" action=<%= `/urls/${item}/delete` %>><button>delete</button></form>
         </li>
       <% }; %>
