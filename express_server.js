@@ -24,7 +24,7 @@ app.get("/urls/new", (req, res) => {
 //post route to handle form submission
 
 app.post("/urls", (req, res) => {
-  console.log(req.body.longURL);
+  console.log(req.body);
   res.send("Ok");
 });
 
@@ -36,6 +36,15 @@ app.get("/urls/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+function generateRandomString() {
+  const randomString = "";
+  const possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (const i = 0; i < 5; i++) {
+    randomString += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+  }
+  return randomString;
+}
 
 // app.get("/", (req, res) => {
 //   res.send("Hello!");
