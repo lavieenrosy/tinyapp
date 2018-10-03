@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+app.use(cookieParser());
 
 let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -13,7 +15,7 @@ let urlDatabase = {
 //list of URLs
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -30,7 +32,8 @@ app.post("/urls/:id", (req, res) => {
 //get route to render the urls_new.ejs template in the browser and present the form to the user
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = { username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 });
 
 //post route to handle form submission
@@ -55,7 +58,7 @@ app.post("/urls/:id/delete", (req, res) => {
 //displays url entry
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase };
+  let templateVars = { username: req.cookies["username"], shortURL: req.params.id, longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
 
@@ -64,6 +67,16 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+});
+
+//route for login submission
+
+app.post("/login", (req, res) => {
+  let username = req.body.username;
+  console.log(username);
+  res.cookie("username", username);
+  res.redirect("/urls");
+
 });
 
 app.listen(PORT, () => {

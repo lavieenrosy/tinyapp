@@ -10,11 +10,11 @@
   <% include ./partials/_header %>
 </header>
 
-  <h2 class="text-secondary">ShortURL: <b><%= shortURL %> </b></h2>
+  <h2 class="text-secondary">ShortURL: <strong><%= shortURL %> </strong></h2>
     <br>
     <ul>
       <li>
-        <%= longURL[shortURL] %> - <%= shortURL %>
+        <%= longURL[shortURL] %>
         <form method="POST" action=<%= `/urls/${shortURL}` %>>
           <label for="longURL" class="text-info">Enter a new URL:</label>
           <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">

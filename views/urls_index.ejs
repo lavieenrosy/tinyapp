@@ -13,7 +13,7 @@
   <h3 class="text-secondary">List of URLs</h3>
     <ul>
       <% for (var item in urls) { %>
-        <li><%= item %> - <%= urls[item] %> - <a href=<%= `/urls/${item}` %> class="text-info" >edit</a>
+        <li><strong class="text-info"><%= item %></strong> - <%= urls[item] %> - <a href=<%= `/urls/${item}` %> class="text-info" >edit</a>
         <form method="POST" action=<%= `/urls/${item}/delete` %>><button>delete</button></form>
         </li>
       <% }; %>
