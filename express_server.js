@@ -24,8 +24,12 @@ app.get("/urls/new", (req, res) => {
 //post route to handle form submission
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");
+  let submittedLongURL = `http://${req.body.longURL}`;
+  let newlyGeneratedShortURL = generateRandomString();
+  urlDatabase[newlyGeneratedShortURL] = submittedLongURL;
+  console.log(urlDatabase);
+  res.redirect(`/urls/${newlyGeneratedShortURL}`);
+  // res.send("Ok");
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -38,9 +42,9 @@ app.listen(PORT, () => {
 });
 
 function generateRandomString() {
-  const randomString = "";
+  let randomString = "";
   const possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (const i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     randomString += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
   }
   return randomString;
