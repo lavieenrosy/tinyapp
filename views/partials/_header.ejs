@@ -1,11 +1,20 @@
 <h1 class="text-info">Welcome to your local URL shortener</h1>
 
-<p>Welcome, <strong class="text-warning"><%= username %></strong>!</p>
+<% if (username) { %>
+  <p>Welcome, <strong class="text-warning"><%= username %></strong>!</p>
+  <form method="POST" action="/logout">
+    <button>Logout</button>
+  </form>
+
+<% } else { %>
+
 
 <form method="POST" action="/login">
   <label for="username">Username</label>
   <input id="username" type="text" name="username" style="width: 300px"></input>
   <input type="submit" value="Submit">
 </form>
+
+<% } %>
 
 
