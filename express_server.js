@@ -17,12 +17,21 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//handles long URL edits
+
+app.post("/urls/:id", (req, res) => {
+  let newURL = req.body.longURL;
+  let targetURL = req.params.id;
+  urlDatabase[targetURL] = newURL;
+  console.log(urlDatabase);
+  res.redirect("/urls");
+});
+
 //get route to render the urls_new.ejs template in the browser and present the form to the user
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
-
 
 //post route to handle form submission
 
@@ -38,7 +47,7 @@ app.post("/urls", (req, res) => {
 //request to handle deleted short URLs
 
 app.post("/urls/:id/delete", (req, res) => {
-  let targetURL = req.params.shortURL;
+  let targetURL = req.params.id;
   delete urlDatabase[targetURL];
   res.redirect("/urls");
 });

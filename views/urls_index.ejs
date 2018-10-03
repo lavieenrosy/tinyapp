@@ -12,7 +12,7 @@
   <h1>List of URLs</h1>
     <ul>
       <% for (var item in urls) { %>
-        <li><%= item %> - <%= urls[item] %> - <href='#'></a>
+        <li><%= item %> - <%= urls[item] %> - <a href=<%= `/urls/${item}` %>>edit</a>
         <form method="POST" action=<%= `/urls/${item}/delete` %>><button>delete</button></form>
         </li>
       <% }; %>

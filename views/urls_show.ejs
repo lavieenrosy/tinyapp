@@ -9,11 +9,18 @@
   <% include ./partials/_header %>
 </header>
 
-  <h1>List of URLs</h1>
+  <h2>ShortURL: <%= shortURL %> </h2>
     <ul>
-      <% for (var item in longURL) { %>
-        <li><%= longURL[item] %> - <%= item %></li>
-      <% }; %>
+
+        <li>
+          <%= longURL[shortURL] %> - <%= shortURL %>
+          <form method="POST" action=<%= `/urls/${shortURL}` %>>
+            <label for="longURL">Enter a new URL:</label>
+            <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+            <button>edit</button>
+          </form>
+        </li>
+
   </ul>
 </body>
 </html>
