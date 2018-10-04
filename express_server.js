@@ -13,13 +13,23 @@ let urlDatabase = {
 };
 
 let users = {
-
+  "01": {
+    id: "111111",
+    email: "111@111.com",
+    password: "111"
+  },
+  "02": {
+    id: "222222",
+    email: "222@222.com",
+    password: "222"
+  }
 };
 
 //list of URLs
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { userObject: users[req.cookies["id"]], urls: urlDatabase };
+  console.log(users);
   res.render("urls_index", templateVars);
 });
 
@@ -36,7 +46,7 @@ app.post("/urls/:id", (req, res) => {
 //get route to render the urls_new.ejs template in the browser and present the form to the user
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
+  let templateVars = { userObject: users[req.cookies["id"]] };
   res.render("urls_new", templateVars);
 });
 
@@ -48,7 +58,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[newlyGeneratedShortURL] = submittedLongURL;
   console.log(urlDatabase);
   res.redirect(`/urls/${newlyGeneratedShortURL}`);
-  // res.send("Ok");
 });
 
 //request to handle deleted short URLs
@@ -62,7 +71,7 @@ app.post("/urls/:id/delete", (req, res) => {
 //displays url entry
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { username: req.cookies["username"], shortURL: req.params.id, longURL: urlDatabase };
+  let templateVars = { userObject: users[req.cookies["id"]], shortURL: req.params.id, longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
 
@@ -76,9 +85,13 @@ app.get("/u/:shortURL", (req, res) => {
 //route for login submission
 
 app.post("/login", (req, res) => {
-  let username = req.body.username;
-  console.log(username);
-  res.cookie("username", username);
+  // let username = req.body.username;
+  // console.log(username);
+  // res.cookie("username", username);
+  let email = req.body.email;
+  let password = req.body.password;
+
+  console.log(users);
   res.redirect("/urls");
 
 });
@@ -93,7 +106,7 @@ app.post("/logout", (req, res) => {
 //route for /register endpoint that returns a register form
 
 app.get("/register", (req, res) => {
-  let templateVars = { username: req.cookies["username"], shortURL: req.params.id, longURL: urlDatabase };
+  let templateVars = { userObject: users[req.cookies["id"]], shortURL: req.params.id, longURL: urlDatabase };
   res.render("urls_reg", templateVars);
 });
 
@@ -102,12 +115,32 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
-  let userID = generateRandomString();
-  users[userID] = { email, password };
+
+  if (email === "" || password === "") {
+    res.status(400).send("You must submit an email and password");
+  }
+
+  //check to see if registered email already exists in database
+  for (let key in users) {
+    if (email === users[key].email) {
+      res.status(400).send("That email has already been used!");
+    }
+  }
+
+  let id = generateRandomString();
+  users[id] = { id, email, password };
+
+  console.log(users);
   res.cookie("email", email);
   res.cookie("password", password);
-  res.cookie("userID", userID);
+  res.cookie("id", id);
   res.redirect("/urls");
+});
+
+app.get("/login", (req, res) => {
+  let templateVars = { userObject: users[req.cookies["id"]] };
+  console.log(users);
+  res.render("urls_login", templateVars);
 });
 
 app.listen(PORT, () => {
