@@ -28,9 +28,31 @@ let users = {
 //list of URLs
 
 app.get("/urls", (req, res) => {
-  let templateVars = { userObject: users[req.cookies["id"]], urls: urlDatabase };
-  console.log(users);
+  let templateVars = { urls: urlDatabase, userObject: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
+});
+
+//route for new tiny URL form; renders urls_new.ejs
+
+app.get("/urls/new", (req, res) => {
+  let templateVars = { userObject: users[req.cookies["user_id"]] };
+  res.render("urls_new", templateVars);
+});
+
+//handles new tiny URL form submission
+
+app.post("/urls", (req, res) => {
+  let submittedLongURL = `http://${req.body.longURL}`;
+  let newlyGeneratedShortURL = generateRandomString();
+  urlDatabase[newlyGeneratedShortURL] = submittedLongURL;
+  res.redirect(`/urls/${newlyGeneratedShortURL}`);
+});
+
+//displays (new) url entry; renders urls_show.ejs
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = { userObject: users[req.cookies["user_id"]], shortURL: req.params.id, longURL: urlDatabase };
+  res.render("urls_show", templateVars);
 });
 
 //handles long URL edits
@@ -39,25 +61,7 @@ app.post("/urls/:id", (req, res) => {
   let newURL = req.body.longURL;
   let targetURL = req.params.id;
   urlDatabase[targetURL] = newURL;
-  console.log(urlDatabase);
   res.redirect("/urls");
-});
-
-//get route to render the urls_new.ejs template in the browser and present the form to the user
-
-app.get("/urls/new", (req, res) => {
-  let templateVars = { userObject: users[req.cookies["id"]] };
-  res.render("urls_new", templateVars);
-});
-
-//post route to handle form submission
-
-app.post("/urls", (req, res) => {
-  let submittedLongURL = `http://${req.body.longURL}`;
-  let newlyGeneratedShortURL = generateRandomString();
-  urlDatabase[newlyGeneratedShortURL] = submittedLongURL;
-  console.log(urlDatabase);
-  res.redirect(`/urls/${newlyGeneratedShortURL}`);
 });
 
 //request to handle deleted short URLs
@@ -68,13 +72,6 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-//displays url entry
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { userObject: users[req.cookies["id"]], shortURL: req.params.id, longURL: urlDatabase };
-  res.render("urls_show", templateVars);
-});
-
 //handles shortURL requests by redirecting to longURL
 
 app.get("/u/:shortURL", (req, res) => {
@@ -82,31 +79,50 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+//USER AUTHENTICATION CODE
+
+//login form; renders urls_login.ejs
+
+app.get("/login", (req, res) => {
+  let templateVars = { userObject: users[req.cookies["user_id"]] };
+  res.render("urls_login", templateVars);
+});
+
 //route for login submission
 
 app.post("/login", (req, res) => {
-  // let username = req.body.username;
-  // console.log(username);
-  // res.cookie("username", username);
-  let email = req.body.email;
-  let password = req.body.password;
 
-  console.log(users);
-  res.redirect("/urls");
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
 
+  for (let key in users) {
+    console.log(userEmail);
+    console.log(users[key].email);
+    console.log(users);
+    if (users[key].email === userEmail) {
+      if (users[key].password === userPassword) {
+        const user_id = users[key].id;
+        console.log("user_id:", user_id);
+        res.cookie("user_id", user_id);
+        res.redirect("/urls");
+        return;
+      }
+    }
+  }
+  res.status(403).send("Error 403: Email not found or password incorrect!");
 });
 
 //route to handle logout
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
 //route for /register endpoint that returns a register form
 
 app.get("/register", (req, res) => {
-  let templateVars = { userObject: users[req.cookies["id"]], shortURL: req.params.id, longURL: urlDatabase };
+  let templateVars = { userObject: users[req.cookies["user_id"]], shortURL: req.params.id, longURL: urlDatabase };
   res.render("urls_reg", templateVars);
 });
 
@@ -117,31 +133,26 @@ app.post("/register", (req, res) => {
   let password = req.body.password;
 
   if (email === "" || password === "") {
-    res.status(400).send("You must submit an email and password");
+    res.status(400).send("Error 400: You must submit an email and password");
   }
 
   //check to see if registered email already exists in database
   for (let key in users) {
     if (email === users[key].email) {
-      res.status(400).send("That email has already been used!");
+      res.status(400).send("Error 400: That email has already been used!");
     }
   }
 
-  let id = generateRandomString();
-  users[id] = { id, email, password };
+  let user_id = generateRandomString();
+  users[user_id] = { id: user_id, email, password };
 
   console.log(users);
   res.cookie("email", email);
   res.cookie("password", password);
-  res.cookie("id", id);
+  res.cookie("user_id", user_id);
   res.redirect("/urls");
 });
 
-app.get("/login", (req, res) => {
-  let templateVars = { userObject: users[req.cookies["id"]] };
-  console.log(users);
-  res.render("urls_login", templateVars);
-});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
