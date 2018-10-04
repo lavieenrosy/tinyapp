@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TinyApp</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+  <header>
+    <% include ./partials/_header %>
+  </header>
+
+  <h3 class="text-secondary">Register</h3>
+
+  <form method="POST" action="/register">
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email" style="width: 300px"></input>
+    <br>
+    <label for="password">Password</label>
+    <input id="password" type="password" name="password" style="width: 300px"></input>
+    <input type="submit" value="Submit">
+  </form>
+
+</body>
+</html>

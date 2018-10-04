@@ -12,6 +12,10 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+let users = {
+
+};
+
 //list of URLs
 
 app.get("/urls", (req, res) => {
@@ -83,6 +87,26 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
+  res.redirect("/urls");
+});
+
+//route for /register endpoint that returns a register form
+
+app.get("/register", (req, res) => {
+  let templateVars = { username: req.cookies["username"], shortURL: req.params.id, longURL: urlDatabase };
+  res.render("urls_reg", templateVars);
+});
+
+//handles a submitted reg form
+
+app.post("/register", (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
+  let userID = generateRandomString();
+  users[userID] = { email, password };
+  res.cookie("email", email);
+  res.cookie("password", password);
+  res.cookie("userID", userID);
   res.redirect("/urls");
 });
 
