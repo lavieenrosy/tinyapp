@@ -13,17 +13,29 @@ let urlDatabase = {
 };
 
 let users = {
-  "01": {
+  "111111": {
     id: "111111",
     email: "111@111.com",
     password: "111"
   },
-  "02": {
+  "222222": {
     id: "222222",
     email: "222@222.com",
     password: "222"
   }
 };
+
+//function to authenticate that user is logged in
+
+function checkUserExistence(req, res) {
+  for (let key in users) {
+    if (req.cookies["user_id"] === users[key].id) {
+      // console.log("Exists ", req.cookies["user_id"]);
+      // console.log("Exists ", users[key].id);
+      return true;
+    }
+  }
+}
 
 //list of URLs
 
@@ -35,8 +47,13 @@ app.get("/urls", (req, res) => {
 //route for new tiny URL form; renders urls_new.ejs
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { userObject: users[req.cookies["user_id"]] };
-  res.render("urls_new", templateVars);
+  const checkUser = checkUserExistence(req, res);
+  if (checkUser) {
+    let templateVars = { userObject: users[req.cookies["user_id"]] };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //handles new tiny URL form submission
@@ -96,13 +113,14 @@ app.post("/login", (req, res) => {
   const userPassword = req.body.password;
 
   for (let key in users) {
-    console.log(userEmail);
-    console.log(users[key].email);
-    console.log(users);
+    // console.log(userEmail);
+    // console.log(users[key].email);
+    // console.log(users);
     if (users[key].email === userEmail) {
       if (users[key].password === userPassword) {
         const user_id = users[key].id;
-        console.log("user_id:", user_id);
+        // console.log(user_id);
+        // console.log("user_id:", user_id);
         res.cookie("user_id", user_id);
         res.redirect("/urls");
         return;
@@ -146,7 +164,6 @@ app.post("/register", (req, res) => {
   let user_id = generateRandomString();
   users[user_id] = { id: user_id, email, password };
 
-  console.log(users);
   res.cookie("email", email);
   res.cookie("password", password);
   res.cookie("user_id", user_id);
@@ -157,6 +174,8 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
 
 function generateRandomString() {
   let randomString = "";
