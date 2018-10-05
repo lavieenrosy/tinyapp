@@ -9,7 +9,7 @@
 <header>
   <% include ./partials/_header %>
 </header>
-
+  <div style="margin-left: 20px; margin-top: 20px">
   <h3 class="text-secondary">List of URLs</h3>
     <ul>
       <% for (var item in urlDatabase) { %>
@@ -18,5 +18,7 @@
         </li>
       <% }; %>
   </ul>
+  <a href="/urls/new" class="text-warning">Create a new tiny URL</a>
+  </div>
 </body>
 </html>

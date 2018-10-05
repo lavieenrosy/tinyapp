@@ -65,12 +65,27 @@ function filterDatabase(id) {
   return filteredDatabase;
 }
 
+//homepage
+
+app.get("/", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
+
 //list of URLs
 
 app.get("/urls", (req, res) => {
-  let filteredDatabase = filterDatabase(req.session.user_id);
-  let templateVars = { urlDatabase: filteredDatabase, userObject: users[req.session.user_id] };
-  res.render("urls_index", templateVars);
+  if (req.session.user_id) {
+    let filteredDatabase = filterDatabase(req.session.user_id);
+    let templateVars = { urlDatabase: filteredDatabase, userObject: users[req.session.user_id] };
+    res.render("urls_index", templateVars);
+  } else {
+    let templateVars = { userObject: users[req.session.user_id], message: "Please login to view URLs" };
+    res.render("urls_error", templateVars);
+  }
 });
 
 //route for new tiny URL form; renders urls_new.ejs
@@ -98,17 +113,20 @@ app.post("/urls", (req, res) => {
 //displays (new) url entry; renders urls_show.ejs
 
 app.get("/urls/:id", (req, res) => {
-  const checkUser = checkUserExistence(req, res);
+
   const shortURL = req.params.id;
+  const shortURLobject = urlDatabase[shortURL];
   const currentUserID = req.session.user_id;
 
-  if (checkUser && urlDatabase[shortURL]["user_id"] === currentUserID) {
+  if (shortURLobject && shortURLobject.user_id === currentUserID) {
     let templateVars = { userObject: users[req.session.user_id], shortURL: req.params.id, urlDatabase: urlDatabase };
     res.render("urls_show", templateVars);
-  } else if (checkUser) {
-    res.send("Sorry, this is not your tiny URL!")
+  } else if (shortURLobject) {
+    let templateVars = { userObject: users[req.session.user_id], message: "Sorry, you cannot access this tiny URL :(" };
+    res.render("urls_error", templateVars);
   } else {
-    res.send("Sorry, you are not logged in!");
+    let templateVars = { userObject: users[req.session.user_id], message: "Sorry, this URL does not exist!" };
+    res.render("urls_error", templateVars);
   }
 });
 
@@ -132,7 +150,7 @@ app.post("/urls/:id/delete", (req, res) => {
 //handles shortURL requests by redirecting to longURL
 
 app.get("/u/:shortURL", (req, res) => {
-  let urlObject = urlDatabase[req.params.shortURL];
+  const urlObject = urlDatabase[req.params.shortURL];
   const longURL = urlObject.longURL
   res.redirect(longURL);
 });

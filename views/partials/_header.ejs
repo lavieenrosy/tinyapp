@@ -1,15 +1,18 @@
+<div style="margin-left: 20px; margin-top: 20px">
+
 <h1 class="text-info">Welcome to your local URL shortener</h1>
 
 <% if (userObject) { %>
-  <p>Welcome, <strong class="text-warning"><%= userObject.id %></strong>!</p>
+  <p>Welcome, <strong class="text-warning"><%= userObject.email %></strong>!</p>
   <form method="POST" action="/logout">
     <button>Logout</button>
   </form>
-
 <% } else { %>
-
-<a href="/register">Register</a> | <a href="/login">Login</a>
-
+  <a href="/register" class="text-warning">Register</a> | <a href="/login" class="text-warning">Login</a>
 <% } %>
+
+<br>
+<br>
+</div>
 
 

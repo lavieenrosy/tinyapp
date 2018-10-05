@@ -5,17 +5,19 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
 
-  <body style="font-size:20px; padding:50px;">
+<!--   <body style="font-size:20px; padding:50px;"> -->
 
   <header>
     <% include ./partials/_header %>
   </header>
+  <div style="margin-left: 20px; margin-top: 20px">
 
-    <form action="/urls" method="POST" style="margin:150px;">
+    <form action="/urls" method="POST" >
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Submit">
     </form>
+  </div>
   </body>
 
 </html>

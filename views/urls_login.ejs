@@ -8,17 +8,17 @@
   <header>
     <% include ./partials/_header %>
   </header>
-
+  <div style="margin-left: 20px; margin-top: 20px">
   <h3 class="text-secondary">Login</h3>
 
-<form method="POST" action="/login">
-  <label for="email">Email</label>
-  <input id="email" type="email" name="email" style="width: 300px"></input>
-  <br>
-  <label for="password">Password</label>
-  <input id="password" type="password" name="password" style="width: 300px"></input>
-  <input type="submit" value="Submit">
-</form>
-
+  <form method="POST" action="/login">
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email" style="width: 300px"></input>
+    <br>
+    <label for="password">Password</label>
+    <input id="password" type="password" name="password" style="width: 300px"></input>
+    <input type="submit" value="Submit">
+  </form>
+  </div>
 </body>
 </html>
