@@ -38,8 +38,6 @@ let users = {
 function checkUserExistence(req, res) {
   for (let key in users) {
     if (req.cookies["user_id"] === users[key].id) {
-      // console.log("Exists ", req.cookies["user_id"]);
-      // console.log("Exists ", users[key].id);
       return true;
     }
   }
@@ -92,12 +90,11 @@ app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const currentUserID = req.cookies["user_id"];
 
-  if (checkUser) {
-    if (shortURL != req.cookies["user_id"]'s cooresponding shortURL') {
-      res.send("Sorry, this is not your tiny URL!")
-    }
+  if (checkUser && urlDatabase[shortURL]["user_id"] === currentUserID) {
     let templateVars = { userObject: users[req.cookies["user_id"]], shortURL: req.params.id, urlDatabase: urlDatabase };
     res.render("urls_show", templateVars);
+  } else if (checkUser) {
+    res.send("Sorry, this is not your tiny URL!")
   } else {
     res.send("Sorry, you are not logged in!");
   }
@@ -182,6 +179,7 @@ app.post("/register", (req, res) => {
   }
 
   //check to see if registered email already exists in database
+
   for (let key in users) {
     if (email === users[key].email) {
       res.status(400).send("Error 400: That email has already been used!");
@@ -190,19 +188,13 @@ app.post("/register", (req, res) => {
 
   let user_id = generateRandomString();
   users[user_id] = { id: user_id, email, password };
-
-  // res.cookie("email", email);
-  // res.cookie("password", password);
   res.cookie("user_id", user_id);
   res.redirect("/urls");
 });
 
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
 
 function generateRandomString() {
   let randomString = "";
@@ -212,15 +204,3 @@ function generateRandomString() {
   }
   return randomString;
 }
-
-// app.get("/", (req, res) => {
-//   res.send("Hello!");
-// });
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
