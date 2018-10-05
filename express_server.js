@@ -13,7 +13,7 @@ app.use(cookieSession({
 
 //Data
 
-let urlDatabase = {
+const urlDatabase = {
   "b2xVn2": {
     shortURL: "b2xVn2blah",
     longURL: "http://www.lighthouselabs.ca",
@@ -26,7 +26,7 @@ let urlDatabase = {
   }
 };
 
-let users = {
+const users = {
   "111111": {
     id: "111111",
     email: "111@111.com",
@@ -52,7 +52,7 @@ function checkUserExistence(req, res) {
 //returns a given user's database of tiny URLs
 
 function filterDatabase(id) {
-  const filteredDatabase = {};
+  let filteredDatabase = {};
   for (let key in urlDatabase) {
     if (urlDatabase[key]["user_id"] === id) {
       filteredDatabase[key] = urlDatabase[key];
