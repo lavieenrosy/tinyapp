@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(cookieParser());
@@ -20,16 +21,21 @@ let urlDatabase = {
   }
 };
 
+//hash the passwords of my seeded data
+
+const user1password = bcrypt.hashSync("111", 10);
+const user2password = bcrypt.hashSync("222", 10);
+
 let users = {
   "111111": {
     id: "111111",
     email: "111@111.com",
-    password: "111"
+    password: user1password;
   },
   "222222": {
     id: "222222",
     email: "222@222.com",
-    password: "222"
+    password: user2password;
   }
 };
 
@@ -143,7 +149,8 @@ app.post("/login", (req, res) => {
 
   for (let key in users) {
     if (users[key].email === userEmail) {
-      if (users[key].password === userPassword) {
+      const hashedPassword = users[key].password;
+      if (bcrypt.compareSync(userPassword, hashedPassword)) {
         const user_id = users[key].id;
         res.cookie("user_id", user_id);
         res.redirect("/urls");
@@ -171,8 +178,9 @@ app.get("/register", (req, res) => {
 //handles a submitted reg form
 
 app.post("/register", (req, res) => {
-  let email = req.body.email;
-  let password = req.body.password;
+  const email = req.body.email;
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
     res.status(400).send("Error 400: You must submit an email and password");
@@ -187,7 +195,7 @@ app.post("/register", (req, res) => {
   }
 
   let user_id = generateRandomString();
-  users[user_id] = { id: user_id, email, password };
+  users[user_id] = { id: user_id, email, password: hashedPassword };
   res.cookie("user_id", user_id);
   res.redirect("/urls");
 });
