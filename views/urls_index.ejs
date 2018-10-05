@@ -12,8 +12,8 @@
 
   <h3 class="text-secondary">List of URLs</h3>
     <ul>
-      <% for (var item in urls) { %>
-        <li><strong class="text-info"><%= item %></strong> - <%= urls[item] %> - <a href=<%= `/urls/${item}` %> class="text-info" >edit</a>
+      <% for (var item in urlDatabase) { %>
+        <li><strong class="text-info"><%= item %></strong> - <%= urlDatabase[item].longURL %> - <a href=<%= `/urls/${item}` %> class="text-info" >edit</a>
         <form method="POST" action=<%= `/urls/${item}/delete` %>><button>delete</button></form>
         </li>
       <% }; %>

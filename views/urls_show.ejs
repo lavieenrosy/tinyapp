@@ -14,7 +14,7 @@
     <br>
     <ul>
       <li>
-        <%= longURL[shortURL] %>
+        <%= urlDatabase[shortURL]["longURL"] %>
         <form method="POST" action=<%= `/urls/${shortURL}` %>>
           <label for="longURL" class="text-info">Enter a new URL:</label>
           <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
