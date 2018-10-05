@@ -106,8 +106,14 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   let user_id = req.session.user_id;
-  urlDatabase[shortURL] = { shortURL, longURL, user_id }
-  res.redirect(`/urls/${shortURL}`);
+
+  if (user_id) {
+    urlDatabase[shortURL] = { shortURL, longURL, user_id }
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    let templateVars = { userObject: users[req.session.user_id], message: "Please login!" };
+    res.render("urls_error", templateVars);
+  }
 });
 
 //displays (new) url entry; renders urls_show.ejs
@@ -151,8 +157,13 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const urlObject = urlDatabase[req.params.shortURL];
-  const longURL = urlObject.longURL
-  res.redirect(longURL);
+  if (urlObject) {
+    const longURL = urlObject.longURL
+    res.redirect(longURL);
+  } else {
+    let templateVars = { userObject: users[req.session.user_id], message: "Sorry, this tiny URL does not exist!" };
+    res.render("urls_error", templateVars);
+  }
 });
 
 //USER AUTHENTICATION CODE
@@ -160,8 +171,13 @@ app.get("/u/:shortURL", (req, res) => {
 //login form; renders urls_login.ejs
 
 app.get("/login", (req, res) => {
+  const currentUserID = req.session.user_id;
+  if (currentUserID) {
+    res.redirect("/urls");
+  } else {
   let templateVars = { userObject: users[req.session.user_id] };
   res.render("urls_login", templateVars);
+  }
 });
 
 //route for login submission
@@ -182,7 +198,9 @@ app.post("/login", (req, res) => {
       }
     }
   }
-  res.status(403).send("Error 403: Email not found or password incorrect!");
+  res.status(403);
+  let templateVars = { userObject: users[req.session.user_id], message: "Please enter valid email or password." };
+  res.render("urls_error", templateVars);
 });
 
 //route to handle logout
@@ -196,8 +214,13 @@ app.post("/logout", (req, res) => {
 //route for /register endpoint that returns a register form
 
 app.get("/register", (req, res) => {
+  const currentUserID = req.session.user_id;
+  if (currentUserID) {
+    res.redirect("/urls");
+  } else {
   let templateVars = { userObject: users[req.session.user_id] };
   res.render("urls_reg", templateVars);
+  }
 });
 
 //handles a submitted reg form
@@ -208,14 +231,18 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
-    res.status(400).send("Error 400: You must submit an email and password");
+    res.status(400);
+    let templateVars = { userObject: users[req.session.user_id], message: "Error 400: You must submit an email and password." };
+    res.render("urls_error", templateVars);
   }
 
   //check to see if registered email already exists in database
 
   for (let key in users) {
     if (email === users[key].email) {
-      res.status(400).send("Error 400: That email has already been used!");
+      res.status(400);
+      let templateVars = { userObject: users[req.session.user_id], message: "Error 400: That email has already been used!" };
+      res.render("urls_error", templateVars);
     }
   }
 
