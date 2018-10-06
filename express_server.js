@@ -41,9 +41,9 @@ const users = {
 
 //authenticates that user is logged in
 
-function checkUserExistence(req, res) {
+function checkUserExistence(cookie) {
   for (let key in users) {
-    if (req.session.user_id === users[key].id) {
+    if (cookie === users[key].id) {
       return true;
     }
   }
@@ -66,7 +66,8 @@ function filterDatabase(id) {
 //homepage
 
 app.get("/", (req, res) => {
-  if (req.session.user_id) {
+  const checkUser = checkUserExistence(req.session.user_id);
+  if (checkUser) {
     res.redirect("/urls");
   } else {
     res.redirect("/login");
@@ -76,7 +77,8 @@ app.get("/", (req, res) => {
 //list of URLs
 
 app.get("/urls", (req, res) => {
-  if (req.session.user_id) {
+  const checkUser = checkUserExistence(req.session.user_id);
+  if (checkUser) {
     const filteredDatabase = filterDatabase(req.session.user_id);
     const templateVars = { urlDatabase: filteredDatabase, userObject: users[req.session.user_id] };
     res.render("urls_index", templateVars);
@@ -89,7 +91,7 @@ app.get("/urls", (req, res) => {
 //route for new tiny URL form; renders urls_new.ejs
 
 app.get("/urls/new", (req, res) => {
-  const checkUser = checkUserExistence(req, res);
+  const checkUser = checkUserExistence(req.session.user_id);
   if (checkUser) {
     const templateVars = { userObject: users[req.session.user_id] };
     res.render("urls_new", templateVars);
@@ -169,12 +171,12 @@ app.get("/u/:shortURL", (req, res) => {
 //login form; renders urls_login.ejs
 
 app.get("/login", (req, res) => {
-  const currentUserID = req.session.user_id;
-  if (currentUserID) {
+  const checkUser = checkUserExistence(req.session.user_id);
+  if (checkUser) {
     res.redirect("/urls");
   } else {
-  let templateVars = { userObject: users[req.session.user_id] };
-  res.render("urls_login", templateVars);
+    let templateVars = { userObject: users[req.session.user_id] };
+    res.render("urls_login", templateVars);
   }
 });
 
@@ -209,8 +211,8 @@ app.post("/logout", (req, res) => {
 //route for registration form
 
 app.get("/register", (req, res) => {
-  const currentUserID = req.session.user_id;
-  if (currentUserID) {
+  const checkUser = checkUserExistence(req.session.user_id);
+  if (checkUser) {
     res.redirect("/urls");
   } else {
   const templateVars = { userObject: users[req.session.user_id] };
