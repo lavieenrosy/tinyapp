@@ -49,6 +49,16 @@ function checkUserExistence(cookie) {
   }
 }
 
+//checks if email exists
+
+function checkEmailExistence(email) {
+  for (let key in users) {
+    if (email === users[key].email) {
+      return true;
+    }
+  }
+}
+
 //returns a given user's database of tiny URLs
 
 function filterDatabase(id) {
@@ -185,20 +195,24 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
-  for (let key in users) {
-    if (users[key].email === userEmail) {
-      const hashedPassword = users[key].password;
-      if (bcrypt.compareSync(userPassword, hashedPassword)) {
-        const user_id = users[key].id;
-        req.session.user_id = user_id;
-        res.redirect("/urls");
-        return;
+
+  if (userEmail === "" || userPassword === "") {
+    res.status(403);
+    const templateVars = { userObject: users[req.session.user_id], message: "Please enter valid email or password." };
+    res.render("urls_error", templateVars);
+  } else {
+    for (let key in users) {
+      if (users[key].email === userEmail) {
+        const hashedPassword = users[key].password;
+        if (bcrypt.compareSync(userPassword, hashedPassword)) {
+          const user_id = users[key].id;
+          req.session.user_id = user_id;
+          res.redirect("/urls");
+          return;
+        }
       }
     }
   }
-  res.status(403);
-  const templateVars = { userObject: users[req.session.user_id], message: "Please enter valid email or password." };
-  res.render("urls_error", templateVars);
 });
 
 //route to handle logout
@@ -226,6 +240,7 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
+  const checkEmail = checkEmailExistence(email);
 
   //ensure both an email and password are entered
 
@@ -237,20 +252,20 @@ app.post("/register", (req, res) => {
 
   //check to see if registered email already exists in database
 
-  for (let key in users) {
-    if (email === users[key].email) {
-      res.status(400);
-      let templateVars = { userObject: users[req.session.user_id], message: "Error 400: That email has already been used!" };
-      res.render("urls_error", templateVars);
-    }
+  else if (checkEmail) {
+    res.status(400);
+    let templateVars = { userObject: users[req.session.user_id], message: "Error 400: That email has already been used!" };
+    res.render("urls_error", templateVars);
   }
 
   //for new clients
 
-  let user_id = generateRandomString();
-  users[user_id] = { id: user_id, email, password: hashedPassword };
-  req.session.user_id = user_id;
-  res.redirect("/urls");
+  else {
+    let user_id = generateRandomString();
+    users[user_id] = { id: user_id, email, password: hashedPassword };
+    req.session.user_id = user_id;
+    res.redirect("/urls");
+  }
 });
 
 app.listen(PORT, () => {
