@@ -55,10 +55,9 @@ function checkEmailExistence(email) {
   for (let key in users) {
     if (email === users[key].email) {
       return true;
-    } else {
-      return false;
     }
   }
+  return false;
 }
 
 //checks if password exists
@@ -72,6 +71,7 @@ function checkPasswordExistence(password, email) {
       }
     }
   }
+  return false;
 }
 
 //returns a given user's database of tiny URLs
