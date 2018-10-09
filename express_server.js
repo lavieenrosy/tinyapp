@@ -55,6 +55,21 @@ function checkEmailExistence(email) {
   for (let key in users) {
     if (email === users[key].email) {
       return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+//checks if password exists
+
+function checkPasswordExistence(password, email) {
+  for (let key in users) {
+    if (users[key].email === email) {
+      const hashedPassword = users[key].password;
+      if (bcrypt.compareSync(password, hashedPassword)) {
+        return true;
+      }
     }
   }
 }
@@ -195,11 +210,14 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
+  const checkPassword = checkPasswordExistence(userPassword, userEmail);
+  const checkEmail = checkEmailExistence(userEmail);
 
-  if (userEmail === "" || userPassword === "") {
+  if (!checkPassword || !checkEmail) {
     res.status(403);
     const templateVars = { userObject: users[req.session.user_id], message: "Please enter valid email or password." };
     res.render("urls_error", templateVars);
+    return;
   } else {
     for (let key in users) {
       if (users[key].email === userEmail) {
